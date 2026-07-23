@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import (
     QLabel,
     QHBoxLayout,
     QVBoxLayout,
-    QDoubleSpinBox
+    QDoubleSpinBox,
+    QPushButton
 
 )
 
@@ -68,16 +69,24 @@ class Dashboard(QMainWindow):
 
 
         # Curves
-        self.ballCurve = self.ballPlot.plot()
+        self.ballCurveX = self.ballPlot.plot(pen='b', name="X")
+        self.ballCurveY = self.ballPlot.plot(pen='r', name="Y")
 
-        self.errorCurve = self.errorPlot.plot()
+        self.errorCurveX = self.errorPlot.plot(pen='g', name="X")
+        self.errorCurveY = self.errorPlot.plot(pen='m', name="Y")
 
-        self.servoCurve = self.servoPlot.plot()
+        self.servoCurveX = self.servoPlot.plot(pen='c', name="X")
+        self.servoCurveY = self.servoPlot.plot(pen='y', name="Y")
         # Graph Data
         self.timeData = []
-        self.ballData = []
-        self.errorData = []
-        self.servoData = []
+        self.ballDataX = []
+        self.ballDataY = []
+
+        self.errorDataX = []
+        self.errorDataY = []
+
+        self.servoDataX = []
+        self.servoDataY = []
 
         self.time = 0
   
@@ -96,7 +105,9 @@ class Dashboard(QMainWindow):
         
         self.mainLayout.addWidget(self.leftPanel)
         self.mainLayout.addWidget(self.rightPanel)
-        
+        self.resetButton = QPushButton("Reset Ball")
+        self.pauseButton = QPushButton("Pause")
+        self.resumeButton = QPushButton("Resume")
         # =====================================
         # Styles
         # =====================================
@@ -185,7 +196,8 @@ class Dashboard(QMainWindow):
         self.kpSpin.setValue(60)
         self.kdSpin.setValue(3)
 
-        
+        self.actionTitle = QLabel("Actions")
+        self.actionTitle.setStyleSheet(titleStyle)
         # =====================================
         # Add Widgets
         # =====================================
@@ -240,7 +252,12 @@ class Dashboard(QMainWindow):
         
         self.rightLayout.addWidget(QLabel("KD"))
         self.rightLayout.addWidget(self.kdSpin)
-        
+        self.rightLayout.addSpacing(20)
+        self.rightLayout.addWidget(self.actionTitle)
+        self.rightLayout.addSpacing(10)
+        self.rightLayout.addWidget(self.resetButton)
+        self.rightLayout.addWidget(self.pauseButton)
+        self.rightLayout.addWidget(self.resumeButton)
         # Stretch
         
         self.mainLayout.setStretch(0, 3)
@@ -248,31 +265,52 @@ class Dashboard(QMainWindow):
         
         self.leftPanel.setStyleSheet("background-color: lightgray;")
         self.rightPanel.setStyleSheet("background-color: white;")
-        self.mainLayout.setStretch(0, 3)
-        self.mainLayout.setStretch(1, 1)
+      
 
 
-        self.leftPanel.setStyleSheet("background-color: lightgray;")
-        self.rightPanel.setStyleSheet("background-color: white;")
+    def setGraphData(
+    
+        self,
 
+        time,
 
+        ballX,
+        ballY,
 
-    def setGraphData(self, time, ball, error, servo):
+        errorX,
+        errorY,
 
+        servoX,
+        servoY
+
+    ):
         self.timeData.append(time)
-        self.ballData.append(ball)
-        self.errorData.append(error)
-        self.servoData.append(servo)
+        self.ballDataX.append(ballX)
+        self.ballDataY.append(ballY)
+
+        self.errorDataX.append(errorX)
+        self.errorDataY.append(errorY)
+
+        self.servoDataX.append(servoX)
+        self.servoDataY.append(servoY)
 
         if len(self.timeData) > 500:
             self.timeData.pop(0)
-            self.ballData.pop(0)
-            self.errorData.pop(0)
-            self.servoData.pop(0)
+            self.ballDataX.pop(0)
+            self.ballDataY.pop(0)
+            self.errorDataX.pop(0)
+            self.errorDataY.pop(0)
+            self.servoDataX.pop(0)
+            self.servoDataY.pop(0)
 
-        self.ballCurve.setData(self.timeData, self.ballData)
-        self.errorCurve.setData(self.timeData, self.errorData)
-        self.servoCurve.setData(self.timeData, self.servoData)
+        self.ballCurveX.setData(self.timeData, self.ballDataX)
+        self.ballCurveY.setData(self.timeData, self.ballDataY)
+        
+        self.errorCurveX.setData(self.timeData, self.errorDataX)
+        self.errorCurveY.setData(self.timeData, self.errorDataY)
+        
+        self.servoCurveX.setData(self.timeData, self.servoDataX)
+        self.servoCurveY.setData(self.timeData, self.servoDataY)
     def updateStatus(
         self,
         time,

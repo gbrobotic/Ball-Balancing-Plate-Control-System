@@ -13,6 +13,9 @@ app = QApplication(sys.argv)
 dashboard = Dashboard()
 
 dashboard.show()
+dashboard.resetButton.clicked.connect(resetBall)
+dashboard.pauseButton.clicked.connect(pauseSimulation)
+dashboard.resumeButton.clicked.connect(resumeSimulation)
 prevErrorX = 0
 prevErrorY = 0
 currentTime = 0
@@ -49,8 +52,11 @@ while isSimulationRunning():
     dashboard.setGraphData(
         currentTime,
         currentX,
+        currentY,
         errorX,
-        servoX
+        errorY,
+        servoX,
+        servoY
     )
     dashboard.updateStatus(
     currentTime,
@@ -60,8 +66,8 @@ while isSimulationRunning():
     errorY,
     servoX,
     servoY,
-    TARGET_X,
-    TARGET_Y,
+    dashboard.targetXSpin.value(),
+    dashboard.targetYSpin.value(),
     KP,
     KD
 )
@@ -72,5 +78,8 @@ while isSimulationRunning():
 
     time.sleep(DT)
 
-
+    print(
+        dashboard.kpSpin.value(),
+        dashboard.kdSpin.value()
+    )
 stopSimulation()
