@@ -6,7 +6,8 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QDoubleSpinBox,
-    QPushButton
+    QPushButton,
+    QComboBox
 
 )
 
@@ -172,7 +173,15 @@ class Dashboard(QMainWindow):
         
         self.targetXSpin = QDoubleSpinBox()
         self.targetYSpin = QDoubleSpinBox()
-        
+        self.trajectoryCombo = QComboBox()
+
+        self.trajectoryCombo.addItems([
+            "Manual",
+            "Point",
+            "Line",
+            "Circle",
+            "Figure-8"
+        ])
         for spin in [self.targetXSpin, self.targetYSpin]:
         
             spin.setRange(-0.2, 0.2)
@@ -241,7 +250,8 @@ class Dashboard(QMainWindow):
         
         self.rightLayout.addWidget(QLabel("Target Y"))
         self.rightLayout.addWidget(self.targetYSpin)
-        
+        self.rightLayout.addWidget(QLabel("Trajectory"))
+        self.rightLayout.addWidget(self.trajectoryCombo)
         self.rightLayout.addSpacing(15)
         
         
@@ -336,7 +346,8 @@ class Dashboard(QMainWindow):
         self.servoYLabel.setText(f"Servo Y : {servoY:.3f} rad")
 
         self.timeLabel.setText(f"Time : {time:.2f} s")
-
+    def getTrajectory(self):
+        return self.trajectoryCombo.currentText()
         
     
 if __name__ == "__main__":

@@ -27,8 +27,23 @@ currentTime = 0
 while isSimulationRunning():
 
     currentTime += DT
-    targetX, targetY = figure8(currentTime)
-
+    mode = dashboard.getTrajectory()
+    
+    if mode == "Manual":
+        targetX = dashboard.targetXSpin.value()
+        targetY = dashboard.targetYSpin.value()
+    
+    elif mode == "Point":
+        targetX, targetY = point()
+    
+    elif mode == "Line":
+        targetX, targetY = line(currentTime)
+    
+    elif mode == "Circle":
+        targetX, targetY = circle(currentTime)
+    
+    elif mode == "Figure-8":
+        targetX, targetY = figure8(currentTime)
     currentX, currentY = getBallPosition()
 
     servoX, errorX = computePD(
