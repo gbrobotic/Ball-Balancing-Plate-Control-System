@@ -4,7 +4,9 @@ from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
     QHBoxLayout,
-    QVBoxLayout
+    QVBoxLayout,
+    QDoubleSpinBox
+
 )
 
 import pyqtgraph as pg
@@ -80,43 +82,172 @@ class Dashboard(QMainWindow):
         self.time = 0
   
 
+        # ===========================
         # Right Panel
+        # ===========================
+        
         self.rightPanel = QWidget()
-
-        self.mainLayout.addWidget(self.leftPanel)
-        self.mainLayout.addWidget(self.rightPanel)
         self.rightLayout = QVBoxLayout()
+        
         from PyQt5.QtCore import Qt
         self.rightLayout.setAlignment(Qt.AlignTop)
+        
         self.rightPanel.setLayout(self.rightLayout)
-        self.statusLabel = QLabel("Simulation : Stopped")
+        
+        self.mainLayout.addWidget(self.leftPanel)
+        self.mainLayout.addWidget(self.rightPanel)
+        
+        # =====================================
+        # Styles
+        # =====================================
+        
+        titleStyle = """
+        font-size:18px;
+        font-weight:bold;
+        """
+        
+        labelStyle = """
+        font-size:14px;
+        padding:2px;
+        """
+        
+        statusStyle = """
+        font-size:15px;
+        font-weight:bold;
+        """
+        
+        # =====================================
+        # Live Status
+        # =====================================
+        
+        self.statusTitle = QLabel("Live Status")
+        self.statusTitle.setStyleSheet(titleStyle)
+        
+        self.statusLabel = QLabel("🔴 Simulation : Stopped")
+        self.statusLabel.setStyleSheet(statusStyle)
+        
         self.ballXLabel = QLabel("Ball X : 0.000 m")
         self.ballYLabel = QLabel("Ball Y : 0.000 m")
-
+        
         self.errorXLabel = QLabel("Error X : 0.000 m")
         self.errorYLabel = QLabel("Error Y : 0.000 m")
-
+        
         self.servoXLabel = QLabel("Servo X : 0.000 rad")
         self.servoYLabel = QLabel("Servo Y : 0.000 rad")
-
+        
         self.timeLabel = QLabel("Time : 0.00 s")
+        
+        # Apply Style
+        
+        for label in [
+            self.ballXLabel,
+            self.ballYLabel,
+            self.errorXLabel,
+            self.errorYLabel,
+            self.servoXLabel,
+            self.servoYLabel,
+            self.timeLabel
+        ]:
+            label.setStyleSheet(labelStyle)
+        
+        # =====================================
+        # Controller
+        # =====================================
+        
+        self.controllerTitle = QLabel("Controller")
+        self.controllerTitle.setStyleSheet(titleStyle)
+        
+        # Target Spin Boxes
+        
+        self.targetXSpin = QDoubleSpinBox()
+        self.targetYSpin = QDoubleSpinBox()
+        
+        for spin in [self.targetXSpin, self.targetYSpin]:
+        
+            spin.setRange(-0.2, 0.2)
+            spin.setDecimals(3)
+            spin.setSingleStep(0.01)
+            spin.setValue(0)
+        
+        # KP KD Labels
+        
+        self.kpSpin = QDoubleSpinBox()
+        self.kdSpin = QDoubleSpinBox()
+        self.kpSpin.setRange(0, 500)
+        self.kdSpin.setRange(0, 100)
+
+        self.kpSpin.setDecimals(2)
+        self.kdSpin.setDecimals(2)
+
+        self.kpSpin.setSingleStep(1)
+        self.kdSpin.setSingleStep(0.1)
+
+        self.kpSpin.setValue(60)
+        self.kdSpin.setValue(3)
+
+        
+        # =====================================
+        # Add Widgets
+        # =====================================
+        
+        # -------- Live Status --------
+        
+        self.rightLayout.addWidget(self.statusTitle)
         self.rightLayout.addWidget(self.statusLabel)
+        
+        self.rightLayout.addSpacing(10)
+        
         self.rightLayout.addWidget(self.ballXLabel)
         self.rightLayout.addWidget(self.ballYLabel)
-
-        self.rightLayout.addSpacing(15)
-
+        
+        self.rightLayout.addSpacing(10)
+        
         self.rightLayout.addWidget(self.errorXLabel)
         self.rightLayout.addWidget(self.errorYLabel)
-
-        self.rightLayout.addSpacing(15)
-
+        
+        self.rightLayout.addSpacing(10)
+        
         self.rightLayout.addWidget(self.servoXLabel)
         self.rightLayout.addWidget(self.servoYLabel)
-
-        self.rightLayout.addSpacing(15)
-
+        
+        self.rightLayout.addSpacing(10)
+        
         self.rightLayout.addWidget(self.timeLabel)
+        
+        # -------- Controller --------
+        
+        self.rightLayout.addSpacing(25)
+        
+        self.rightLayout.addWidget(self.controllerTitle)
+        
+        self.rightLayout.addSpacing(10)
+        
+        self.rightLayout.addWidget(QLabel("Target X"))
+        self.rightLayout.addWidget(self.targetXSpin)
+        
+        self.rightLayout.addSpacing(5)
+        
+        self.rightLayout.addWidget(QLabel("Target Y"))
+        self.rightLayout.addWidget(self.targetYSpin)
+        
+        self.rightLayout.addSpacing(15)
+        
+        
+        self.rightLayout.addWidget(QLabel("KP"))
+        self.rightLayout.addWidget(self.kpSpin)
+        
+        self.rightLayout.addSpacing(5)
+        
+        self.rightLayout.addWidget(QLabel("KD"))
+        self.rightLayout.addWidget(self.kdSpin)
+        
+        # Stretch
+        
+        self.mainLayout.setStretch(0, 3)
+        self.mainLayout.setStretch(1, 1)
+        
+        self.leftPanel.setStyleSheet("background-color: lightgray;")
+        self.rightPanel.setStyleSheet("background-color: white;")
         self.mainLayout.setStretch(0, 3)
         self.mainLayout.setStretch(1, 1)
 
@@ -142,20 +273,34 @@ class Dashboard(QMainWindow):
         self.ballCurve.setData(self.timeData, self.ballData)
         self.errorCurve.setData(self.timeData, self.errorData)
         self.servoCurve.setData(self.timeData, self.servoData)
-    def updateStatus(self, time, ballX, ballY, errorX, errorY, servoX, servoY):
-    
-        self.statusLabel.setText("Simulation : Running")
-    
+    def updateStatus(
+        self,
+        time,
+        ballX,
+        ballY,
+        errorX,
+        errorY,
+        servoX,
+        servoY,
+        targetX,
+        targetY,
+        kp,
+        kd
+    ):
+        self.statusLabel.setText("🟢 Simulation : Running")
         self.ballXLabel.setText(f"Ball X : {ballX:.3f} m")
         self.ballYLabel.setText(f"Ball Y : {ballY:.3f} m")
-    
+
         self.errorXLabel.setText(f"Error X : {errorX:.3f} m")
         self.errorYLabel.setText(f"Error Y : {errorY:.3f} m")
-    
+
         self.servoXLabel.setText(f"Servo X : {servoX:.3f} rad")
         self.servoYLabel.setText(f"Servo Y : {servoY:.3f} rad")
-    
+
         self.timeLabel.setText(f"Time : {time:.2f} s")
+
+        
+    
 if __name__ == "__main__":
     app = QApplication([])
 

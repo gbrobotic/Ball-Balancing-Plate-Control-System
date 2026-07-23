@@ -25,21 +25,21 @@ while isSimulationRunning():
     currentX, currentY = getBallPosition()
 
     servoX, errorX = computePD(
-        TARGET_X,
+        dashboard.targetXSpin.value(),
         currentX,
         prevErrorX,
-        KP,
-        KD,
+        dashboard.kpSpin.value(),
+        dashboard.kdSpin.value(),
         DT,
         MAX_ANGLE
     )
 
     servoY, errorY = computePD(
-        TARGET_Y,
+        dashboard.targetYSpin.value(),
         currentY,
         prevErrorY,
-        KP,
-        KD,
+        dashboard.kpSpin.value(),
+        dashboard.kdSpin.value(),
         DT,
         MAX_ANGLE
     )
@@ -59,8 +59,12 @@ while isSimulationRunning():
     errorX,
     errorY,
     servoX,
-    servoY
-    )
+    servoY,
+    TARGET_X,
+    TARGET_Y,
+    KP,
+    KD
+)
     app.processEvents()
 
     prevErrorX = errorX
