@@ -1,13 +1,26 @@
+import sys
+import time
+
 from simulator import *
 from controller import *
 from config import *
+from dashboard import *
 
-import time
+startSimulation()
 
+app = QApplication(sys.argv)
+
+dashboard = Dashboard()
+
+dashboard.show()
 prevErrorX = 0
 prevErrorY = 0
+currentTime = 0
+currentTime = 0
 
-while True:
+while isSimulationRunning():
+
+    currentTime += DT
 
     currentX, currentY = getBallPosition()
 
@@ -31,9 +44,29 @@ while True:
         MAX_ANGLE
     )
 
-    movePlate(servoX, servoY)
+    setPlateAngle(servoX, servoY)
+
+    dashboard.setGraphData(
+        currentTime,
+        currentX,
+        errorX,
+        servoX
+    )
+    dashboard.updateStatus(
+    currentTime,
+    currentX,
+    currentY,
+    errorX,
+    errorY,
+    servoX,
+    servoY
+    )
+    app.processEvents()
 
     prevErrorX = errorX
     prevErrorY = errorY
 
     time.sleep(DT)
+
+
+stopSimulation()

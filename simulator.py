@@ -17,8 +17,19 @@ def getBallPosition():
     return pos[0], pos[1]
 
 
-def movePlate(angleX, angleY):
+def setPlateAngle(angleX, angleY):
 
     sim.setJointTargetPosition(jointX, angleX)
 
     sim.setJointTargetPosition(jointY, angleY)
+
+def startSimulation():
+    sim.startSimulation()
+
+def stopSimulation():
+    sim.stopSimulation()
+def getSimulationState():
+    return sim.getSimulationState()
+
+def isSimulationRunning():
+    return sim.getSimulationState() != sim.simulation_stopped
