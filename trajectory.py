@@ -12,7 +12,7 @@ def line(t):
 
 
 def circle(t):
-    radius = 1.0
+    radius = 0.05
     omega = 0.9
 
     x = radius * math.cos(omega * t)
@@ -25,7 +25,7 @@ def figure8(t):
 
     A = 0.05      # X radius
     B = 0.025     # Y radius
-    omega = 1.5
+    omega = 1.0
 
     x = A * math.sin(omega * t)
     y = B * math.sin(2 * omega * t)

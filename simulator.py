@@ -1,5 +1,6 @@
 from coppeliasim_zmqremoteapi_client import RemoteAPIClient
-
+import numpy as np
+import cv2
 client = RemoteAPIClient()
 sim = client.require('sim')
 
@@ -8,6 +9,8 @@ plate = sim.getObject('/Plate')
 
 jointX = sim.getObject('/RotateX')
 jointY = sim.getObject('/RotateY0')
+
+cam = sim.getObject('/Cam')
 
 
 def getBallPosition():
@@ -54,3 +57,16 @@ def pauseSimulation():
 
 def resumeSimulation():
     sim.startSimulation()
+
+
+def getCameraImage():
+
+    image, resolution = sim.getVisionSensorImg(cam)
+
+    img = np.frombuffer(image, dtype=np.uint8)
+    img = img.reshape(resolution[1], resolution[0], 3)
+
+    img = cv2.flip(img, 0)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+    return img
