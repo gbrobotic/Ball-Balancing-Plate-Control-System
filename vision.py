@@ -1,5 +1,34 @@
 import cv2
+import numpy as np
 
+# # Pixel coordinates (Calibration)
+# imagePoints = np.float32([
+#     [40,40],
+#     [763,36],
+#     [761,760],
+#     [43,758]
+# ])
+
+# # Plate coordinates (meters)
+# worldPoints = np.float32([
+#     [-0.5, 0.5],
+#     [ 0.5, 0.5],
+#     [ 0.5,-0.5],
+#     [-0.5,-0.5]
+# ])
+
+# H = cv2.getPerspectiveTransform(imagePoints, worldPoints)
+
+
+def pixelToWorld(px, py):
+
+    width = 800
+    height = 800
+
+    worldX = -(px - width/2) * (1.0 / width)
+    worldY =  (py - height/2) * (1.0 / height)
+
+    return worldX, worldY
 def detectBall(frame):
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -25,10 +54,3 @@ def detectBall(frame):
     x,y,r = circles[0]
 
     return int(x),int(y)
-def pixelToWorld(px, py, width=800, height=800, plateSize=1.0):
-
-    worldX = (px / width - 0.5) * plateSize
-
-    worldY = -(py / height - 0.5) * plateSize
-
-    return worldX, worldY

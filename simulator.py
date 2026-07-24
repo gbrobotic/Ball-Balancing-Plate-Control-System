@@ -66,7 +66,7 @@ def getCameraImage():
     img = np.frombuffer(image, dtype=np.uint8)
     img = img.reshape(resolution[1], resolution[0], 3)
 
-    img = cv2.flip(img, 0)
+    img = cv2.flip(img, 1)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
     return img

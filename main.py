@@ -44,9 +44,18 @@ while isSimulationRunning():
 
     elif mode == "Figure-8":
         targetX, targetY = figure8(currentTime)
-    currentX, currentY = getBallPosition()
     
+    frame = getCameraImage()
 
+    px, py = detectBall(frame)
+
+    if px is not None:
+
+        currentX, currentY = pixelToWorld(px, py)
+
+    # else:
+
+    #     currentX, currentY = getBallPosition()
     servoX, errorX = computePD(
         # dashboard.targetXSpin.value(),
         targetX,
@@ -108,39 +117,24 @@ while isSimulationRunning():
 
     prevErrorX = errorX
     prevErrorY = errorY
+    if px is not None:
 
-    frame = getCameraImage()
-    pixelX, pixelY = detectBall(frame)
-    
-    if pixelX is not None:
-    
-        visionX, visionY = pixelToWorld(pixelX, pixelY)
-
-        currentX, currentY = getBallPosition()
-
-        print(
-            f"Vision : ({visionX:.3f}, {visionY:.3f})",
-            f"Simulator : ({currentX:.3f}, {currentY:.3f})"
-        )
-    x,y = detectBall(frame)
-
-    if x is not None:
-
-        cv2.circle(frame,(x,y),8,(0,255,0),2)
+        cv2.circle(frame, (px, py), 8, (0,255,0), 2)
 
         cv2.putText(
             frame,
-            f"({x},{y})",
-            (x+10,y),
+            f"({px},{py})",
+            (px+10, py),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.5,
             (0,255,0),
             2
         )
-    display = cv2.resize(frame, (800, 800))
 
+    display = cv2.resize(frame, (800,800))
 
     cv2.imshow("Camera", display)
+    
     cv2.waitKey(1)
 
     time.sleep(DT)
